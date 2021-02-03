@@ -3,16 +3,18 @@ import {
   SafeAreaView,
   StyleSheet,
   View,
-  Animated
+  Animated,
+  Button
 } from 'react-native';
-
+import NetInfo from "@react-native-community/netinfo";
 const Main = React.lazy(() => {
   return new Promise(resolve => setTimeout(resolve, 10 * 1000)).then(
     () => import('./src/resource/index')
   )
 });
 
-function LoadingState() {
+
+function LoadingState(props) {
   const [valLoad,loadVal] = useState(new Animated.Value(0));
   const spinAnimation = () =>{
    valLoad.setValue(0);
@@ -47,6 +49,7 @@ function LoadingState() {
                 outputRange: [0.2,1]
                })}}
                />
+            {props.internet === false && <View><Button onPress={_=>props.checkInet()} title="Reload" /></View> }
        </View>
      </View>
     </SafeAreaView>
@@ -54,11 +57,25 @@ function LoadingState() {
 }
 
 const App = () => {
+  const [connect,connectVal] = useState(false)
+  useEffect(() => {
+    checkInet()
+  });
+
+  function checkInet() {
+    NetInfo.fetch().then(state => {
+      connectVal(state.isConnected)
+    });
+  }
+
   return (
     <Fragment>
+      {!connect?
+        <LoadingState internet={connect} checkInet={checkInet}/> :      
       <Suspense fallback={<LoadingState />}>
            <Main />
       </Suspense>
+          }
     </Fragment>
   );
 }
