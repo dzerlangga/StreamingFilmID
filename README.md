@@ -5,4 +5,4 @@ Mobile
 ## ---- wait for minuts ----
 ## for build 
 - cd android
-./gradlew bundleRelease
+- ./gradlew bundleRelease
